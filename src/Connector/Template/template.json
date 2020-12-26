@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaces_HybridConnectorNameSpace_name": {
+            "defaultValue": "HybridConnectorNameSpace",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Relay/namespaces",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[parameters('namespaces_HybridConnectorNameSpace_name')]",
+            "location": "West US 2",
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Relay/namespaces/AuthorizationRules",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_HybridConnectorNameSpace_name'), '/RootManageSharedAccessKey')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Relay/namespaces', parameters('namespaces_HybridConnectorNameSpace_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Relay/namespaces/HybridConnections",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_HybridConnectorNameSpace_name'), '/HybridConnector1')]",
+            "location": "West US 2",
+            "dependsOn": [
+                "[resourceId('Microsoft.Relay/namespaces', parameters('namespaces_HybridConnectorNameSpace_name'))]"
+            ],
+            "properties": {
+                "requiresClientAuthorization": true
+            }
+        }
+    ]
+}
